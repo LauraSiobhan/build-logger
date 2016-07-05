@@ -1,0 +1,29 @@
+generic database-based logging system, intended in this case for
+logging build time/activity/photos as building an airplane.
+
+multiple interfaces with the db:
+
+* log input: enter activity, links to photo galleries, time spent as
+  well as category, subcategory, helpers, etc.  probably command line
+
+* pretty display: web-based display of log with user-controlled sorting
+  of columns, limiting to certain categories, etc.
+
+* pretty input: more or less the same as long input, but via www form.
+  probably not necessary, but might be nice to have if the system gets
+  published.  password-protected.
+
+things to track:
+
+* date/time of log entry
+* category (fuselage, wings, engine, etc.)
+* subcategory
+* hours or minutes spent
+* description of activity
+* main worker
+* helpers
+
+in a separate table: (not sure if this is worthwhile)
+* date/time of expense
+* cost
+* item(s) purchased

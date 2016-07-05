@@ -1,0 +1,29 @@
+USE buildlog;
+
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE `events` (
+  `date` datetime,
+  `activity` varchar(10000),
+  `hours` float,
+  `primary_worker` varchar(100),
+  `additional_workers` varchar(1000),
+  `category` varchar(100),
+  `subcategory` varchar(100),
+  `cost` float,
+  `purchased` varchar(1000),
+  `photo_url` varchar(200),
+  PRIMARY KEY (`date`)
+);
+
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`name`)
+);
+
+DROP TABLE IF EXISTS `subcategories`;
+CREATE TABLE `subcategories` (
+  `name` varchar(100) NOT NULL,
+  `subcategory_of` varchar(100) NOT NULL,
+  PRIMARY KEY (`name`, `subcategory_of`)
+);
