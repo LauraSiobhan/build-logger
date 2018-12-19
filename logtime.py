@@ -11,7 +11,10 @@ from tempfile import NamedTemporaryFile
 
 # TODO: add readline support
 
-DBINFO = {'user': 'reaper', 'password': 'hello*', 'database': 'buildlog'}
+DBINFO = [{'user': 'reaper', 'password': 'hello*', 'database': 'buildlog',
+           'host': 'localhost'},
+          {'user': 'marquart', 'password': 'Hello*8there', 'database':
+           'charger_buildlog', 'host': 'mysql.marquartcharger.org'}]
 
 QUESTIONS = {'category': 'Select or Enter Category',
              'subcategory': 'Select or Enter Subcategory',
@@ -31,28 +34,31 @@ def main():
     """
     run through the questions
     """
-    db = setup_db()
-    answers = get_answers(db)
-    save_answers(db, answers)
-    cleanup_db(db)
+    dbs = setup_dbs()
+    answers = get_answers(dbs)
+    save_answers(dbs, answers)
+    cleanup_dbs(dbs)
 
 
-def setup_db():
+def setup_dbs():
     """
     set up and return a link to the db
     """
-    db = dbcon.connect(**DBINFO)
-    return db
+    dbs = []
+    for db_info in DBINFO:
+        dbs.append(dbcon.connect(**db_info))
+    return dbs
 
 
-def cleanup_db(db):
+def cleanup_dbs(dbs):
     """
     clean up the DB connection
     """
-    db.close()
+    for db in dbs:
+        db.close()
 
 
-def get_answers(db):
+def get_answers(dbs):
     """
     ask the various questions
     """
@@ -63,20 +69,20 @@ def get_answers(db):
     local_order.remove('subcategory')
     answers = {}
     print(QUESTIONS['category'])
-    answers['category'] = get_category(db)
+    answers['category'] = get_category(dbs)
     print(QUESTIONS['subcategory'])
-    answers['subcategory'] = get_category(db, answers['category'])
+    answers['subcategory'] = get_category(dbs, answers['category'])
     for label in local_order:
         question = QUESTIONS[label]
         answers[label] = ask_question(question)
     return answers
 
 
-def get_category(db, category=None):
+def get_category(dbs, category=None):
     """
     display a list of categories to choose from, and return the answer
     """
-    categories = find_categories(db, category)
+    categories = find_categories(dbs[0], category)
     i = 1
     for cat in categories:
         print('{}: {}'.format(i, cat))
@@ -87,7 +93,7 @@ def get_category(db, category=None):
         answer -= 1
         return categories[answer]
     except ValueError:
-        save_new_category(db, category, answer)
+        save_new_category(dbs, category, answer)
         return answer
 
 
@@ -110,19 +116,20 @@ def find_categories(db, category=None):
     return sorted(categories)
 
 
-def save_new_category(db, cat, subcat):
+def save_new_category(dbs, cat, subcat):
     """
     save the new category out to the DB
     """
-    if cat is None:
-        query = 'insert ignore into categories value ("{}")'
-        query = query.format(subcat)
-    else:
-        query = 'insert ignore into subcategories (name, subcategory_of) '
-        query += 'value ("{}", "{}")'.format(subcat, cat)
-    cursor = db.cursor()
-    cursor.execute(query)
-    db.commit()
+    for db in dbs:
+        if cat is None:
+            query = 'insert ignore into categories value ("{}")'
+            query = query.format(subcat)
+        else:
+            query = 'insert ignore into subcategories (name, subcategory_of) '
+            query += 'value ("{}", "{}")'.format(subcat, cat)
+        cursor = db.cursor()
+        cursor.execute(query)
+        db.commit()
 
 
 def ask_question(question):
@@ -140,26 +147,27 @@ def ask_question(question):
     return answer
 
 
-def save_answers(db, answers):
+def save_answers(dbs, answers):
     """
     take the answers entered and insert them into the db
     """
-    cursor = db.cursor()
-    query = 'insert into events value ({})'
-    arglist = ['NOW()']
-    for label in ORDER:
-        answer = answers[label]
-        try:
-            answer = answer.replace('"', '\\"')
-            arglist.append('"{}"'.format(answer))
-        except TypeError as err:
-            print('got error {} trying to operate on {}'.format(err, answer))
-    argstring = ','.join(arglist)
-    query = query.format(argstring)
-    print('Writing data to database')
-    cursor.execute(query)
-    db.commit()
-    print('Finished')
+    for db in dbs:
+        cursor = db.cursor()
+        query = 'insert into events value ({})'
+        arglist = ['NOW()']
+        for label in ORDER:
+            answer = answers[label]
+            try:
+                answer = answer.replace('"', '\\"')
+                arglist.append('"{}"'.format(answer))
+            except TypeError as err:
+                print('got error {} trying to operate on {}'.format(err, answer))
+        argstring = ','.join(arglist)
+        query = query.format(argstring)
+        print('Writing data to {}'.format(db._host))
+        cursor.execute(query)
+        db.commit()
+        print('Finished')
 
 
 if __name__ == '__main__':
