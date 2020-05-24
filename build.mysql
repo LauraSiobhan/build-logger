@@ -1,4 +1,4 @@
-USE buildlog;
+USE charger_buildlog;
 
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (

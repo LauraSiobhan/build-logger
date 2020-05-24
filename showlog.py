@@ -10,7 +10,7 @@ import datetime
 ORDER = ['date', 'activity', 'hours', 'primary_worker', 'additional_workers',
          'category', 'subcategory', 'cost', 'purchased', 'photo_url']
 
-DBINFO = {'user': 'reaper', 'password': 'hello*', 'database': 'buildlog'}
+DBINFO = {'user': 'reaper', 'password': 'hello*', 'database': 'charger_buildlog'}
 
 
 def main():

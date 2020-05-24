@@ -11,8 +11,8 @@ from tempfile import NamedTemporaryFile
 
 # TODO: add readline support
 
-DBINFO = [{'user': 'reaper', 'password': 'hello*', 'database': 'buildlog',
-           'host': 'localhost'},
+DBINFO = [{'user': 'reaper', 'password': 'hello*', 'database':
+           'charger_buildlog', 'host': 'localhost'},
           {'user': 'marquart', 'password': 'Hello*8there', 'database':
            'charger_buildlog', 'host': 'mysql.marquartcharger.org'}]
 
@@ -38,6 +38,7 @@ def main():
     answers = get_answers(dbs)
     save_answers(dbs, answers)
     cleanup_dbs(dbs)
+    subprocess.run(['./push.sh'])
 
 
 def setup_dbs():
@@ -62,9 +63,7 @@ def get_answers(dbs):
     """
     ask the various questions
     """
-    local_order = []
-    for item in ORDER:
-        local_order.append(item)
+    local_order = ORDER[:]
     local_order.remove('category')
     local_order.remove('subcategory')
     answers = {}
@@ -75,6 +74,8 @@ def get_answers(dbs):
     for label in local_order:
         question = QUESTIONS[label]
         answers[label] = ask_question(question)
+        if label == 'cost' and answers[label] == '':
+            answers[label] = '0'
     return answers
 
 

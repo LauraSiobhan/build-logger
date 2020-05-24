@@ -1,0 +1,2 @@
+CREATE USER 'reaper'@'localhost' IDENTIFIED BY 'hello*';
+GRANT CREATE, DROP, DELETE, INSERT, SELECT, UPDATE on *.* to 'reaper'@'localhost';
