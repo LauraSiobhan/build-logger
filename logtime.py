@@ -20,7 +20,7 @@ QUESTIONS = {'category': 'Select or Enter Category',
              'subcategory': 'Select or Enter Subcategory',
              'activity': 'What activity',
              'hours': 'How many hours (decimal)',
-             'primary_worker': 'Who was the primary worker',
+             'primary_worker': 'Who was the primary worker [<CR> for Ian]',
              'additional_workers': 'Any additional workers',
              'photo_url': 'What photo URL',
              'cost': 'Any cost associated (dollars)',
@@ -76,6 +76,8 @@ def get_answers(dbs):
         answers[label] = ask_question(question)
         if label == 'cost' and answers[label] == '':
             answers[label] = '0'
+        elif label == 'primary_worker' and answers[label] == '':
+            answers[label] = 'Ian'
     return answers
 
 
