@@ -1,7 +1,7 @@
 $(document).ready(function()
 {
     var rand = Math.random()
-    var url = "/reaper/aviation/biplane/testlog/data.py?r=" +rand.toString();
+    var url = "/reaper/aviation/biplane/buildlog/data.py?r=" +rand.toString();
 
     $.getJSON(url,
     function(data)
