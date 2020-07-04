@@ -1,40 +1,50 @@
 <!DOCTYPE html>
 <!-- vi: set wm=2 ai sm tabstop=2 shiftwidth=2 et: -->
 <html lang="en">
-<head>
 <title> Ian's Marquart Charger Buildlog </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/reaper/css/w3.css">
+<link rel="stylesheet" href="/reaper/css/local.css">
+
 <script src="/reaper/aviation/biplane/buildlog/jquery-3.3.1.js"></script>
+<script src="/reaper/js/plotly-latest.min.js"></script>
 <script src="/reaper/aviation/biplane/buildlog/table.js"></script>
-</head>
+<script src="/reaper/aviation/biplane/buildlog/dashboard-total.js"></script>
 
-<body bgcolor="#000000" text="#ffffff" vlink="#999999" link="#0077ff">
+<style>
+.w3-striped tbody tr:nth-child(2n) {
+  background-color: #222;
+  }
+</style>
 
-<center>
-<table border=0 width=80%>
-<tr><td>
+<body>
 
-<h2> Ian's Marquart Charger Buildlog </h2>
+<div class="w3-row">
+  <div class="w3-container w3-quarter"></div>
+  <div class="w3-container w3-half">
+    <h2> Ian's Marquart Charger Buildlog </h2>
 
-<p> As I build my <a href="http://marquartcharger.org/">Marquart
-Charger</a> biplane, I am logging my activity electronically.  You
-get the (perhaps dubious) benefit of this by being able to read about
-that activity here, as it happens.
+    <p> As I build my <a href="http://marquartcharger.org/">Marquart
+    Charger</a> biplane, I am logging my activity electronically.  You
+    get the (perhaps dubious) benefit of this by being able to read about
+    that activity here, as it happens.
 
-<p> Through the logs I tend to refer to parts by number, which can be
-found on the <a
-href="http://www.marquartcharger.org/plans.html">Plans</a>.
+    <p> Through the logs I tend to refer to parts by number, which can be
+    found on the <a
+    href="http://www.marquartcharger.org/plans.html">Plans</a>.
 
-<p> <table class="logtable" border=1 cellpadding=3>
-<tr><th> Date </th><th> Hours </th><th> Activity </th><th> Photo </th></tr>
-</table>
+    <div id="total_progress" style="width:100%;height:300px"></div>
 
-<p><hr>
-<p> Copyright &copy; 2018.  Created by Ian Johnston.  Questions?
-Please mail me at reaper at obairlann dot net.
+    <center>
+    <a href="dashboard.html">Build status dashboard</a>
+    </center>
 
-</tr></td>
-</table>
-</center>
+    <p> <table class="w3-table w3-striped logtable">
+    <tr><th> Activity </th><th> Photo </th></tr>
+    </table>
+  </div>
+  <div class="w3-container w3-quarter"></div>
+</div>
 
 </body>
 </html>

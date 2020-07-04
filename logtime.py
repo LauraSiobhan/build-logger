@@ -5,16 +5,14 @@
 a simple script to input build log information from the command line
 """
 
-import mysql.connector as dbcon
+import sqlite3 as sql
 import os, subprocess
+from datetime import datetime
 from tempfile import NamedTemporaryFile
 
 # TODO: add readline support
 
-DBINFO = [{'user': 'reaper', 'password': 'hello*', 'database':
-           'charger_buildlog', 'host': 'localhost'},
-          {'user': 'marquart', 'password': 'Hello*8there', 'database':
-           'charger_buildlog', 'host': 'mysql.marquartcharger.org'}]
+DBINFO = [{'filename': 'charger-buildlog.sqlite'}]
 
 QUESTIONS = {'category': 'Select or Enter Category',
              'subcategory': 'Select or Enter Subcategory',
@@ -47,7 +45,7 @@ def setup_dbs():
     """
     dbs = []
     for db_info in DBINFO:
-        dbs.append(dbcon.connect(**db_info))
+        dbs.append(sql.connect(db_info['filename']))
     return dbs
 
 
@@ -125,11 +123,11 @@ def save_new_category(dbs, cat, subcat):
     """
     for db in dbs:
         if cat is None:
-            query = 'insert ignore into categories value ("{}")'
+            query = 'insert or ignore into categories values ("{}")'
             query = query.format(subcat)
         else:
-            query = 'insert ignore into subcategories (name, subcategory_of) '
-            query += 'value ("{}", "{}")'.format(subcat, cat)
+            query = 'insert or ignore into subcategories (name, subcategory_of) '
+            query += 'values ("{}", "{}")'.format(subcat, cat)
         cursor = db.cursor()
         cursor.execute(query)
         db.commit()
@@ -141,7 +139,6 @@ def ask_question(question):
     """
     answer = input(question + ' (:e for editor): ')
     if answer == ':e':
-        myfile = NamedTemporaryFile()
         myeditor = os.environ.get('EDITOR') or os.environ.get('VISUAL')
         with NamedTemporaryFile(mode='w+') as fp:
             subprocess.run([myeditor, fp.name])
@@ -156,8 +153,9 @@ def save_answers(dbs, answers):
     """
     for db in dbs:
         cursor = db.cursor()
-        query = 'insert into events value ({})'
-        arglist = ['NOW()']
+        query = 'insert into events values ({})'
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        arglist = ['"{}"'.format(now)]
         for label in ORDER:
             answer = answers[label]
             try:
@@ -167,7 +165,7 @@ def save_answers(dbs, answers):
                 print('got error {} trying to operate on {}'.format(err, answer))
         argstring = ','.join(arglist)
         query = query.format(argstring)
-        print('Writing data to {}'.format(db._host))
+        print('Writing data to sqlite database')
         cursor.execute(query)
         db.commit()
         print('Finished')

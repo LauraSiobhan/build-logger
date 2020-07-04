@@ -7,14 +7,12 @@ $(document).ready(function()
     function(data)
     {
         var tr;
-        var total_hrs = 0;
         for (var i=0; i<data.length; i++)
         {
-            total_hrs += parseFloat(data[i][2]);
+            var act = "<td><p> " + data[i][0] + " :: " + data[i][2] + 
+                      " hours </p>" + "<p> " + niceify(data[i][1]) + " </td>";
             tr = $('<tr/>');
-            tr.append("<td>" + data[i][0] + "</td>"); // date
-            tr.append("<td>" + data[i][2] + "</td>"); // hours
-            tr.append("<td>" + niceify(data[i][1]) + "</td>"); // activity
+            tr.append(act);
             if (data[i][9] == "")
             {
                 tr.append("<td> No picture </td>");
@@ -28,12 +26,6 @@ $(document).ready(function()
             }
             $('.logtable').append(tr);
         }
-        tr = $('<tr/>');
-        tr.append("<td><b>Total</b></td>");
-        tr.append("<td>" + total_hrs.toFixed(1) + "</td>"); // hours
-        tr.append("<td/>");
-        tr.append("<td/>");
-        $('.logtable').append(tr);
     });
 });
 
