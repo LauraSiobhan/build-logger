@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<title> Charger Dashboard </title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/reaper/css/w3.css">
+<link rel="stylesheet" href="/reaper/css/local.css">
+
+<style>
+.svg-container{
+   background-color:black;
+}
+</style>
+
+<body>
+<script src="/reaper/aviation/biplane/buildlog/jquery-3.3.1.js"></script>
+<script src="/reaper/js/plotly-latest.min.js"></script>
+<script src="dashboard.js"></script>
+
+<div class="w3-row">
+    <div class="w3-container w3-quarter"></div>
+    <div class="w3-container w3-half">
+        <h2> Charger Build Dashboard </h2>
+
+        <p> <a target="_blank" href="/reaper/aviation/biplane/buildlog/">Build log</a>
+
+        <p><div class="w3-row">
+            <div class="w3-container w3-quarter"></div>
+            <div class="w3-container w3-half">
+                <div id="total_progress" style="width:100%;height:300px"></div>
+            </div>
+            <div class="w3-container w3-quarter"></div>
+        </div>
+        <div class="w3-row">
+            <div class="w3-container w3-half">
+                <div id="monthly_rate" style="width:100%;height:300px"></div>
+            </div>
+            <div class="w3-container w3-half">
+                <div id="30_day_chart" style="width:100%;height:300px"></div>
+            </div>
+        </div>
+        <div id="monthly_progress" style="width:100%;height:300px"></div>
+        <div id="category_hours" style="width:100%;height:300px"></div>
+    </div>
+
+    <div class="w3-container w3-half"></div>
+</div>
+
+</body>
+</html>
