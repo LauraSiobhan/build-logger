@@ -12,8 +12,6 @@ import csv
 ORDER = ['date', 'activity', 'hours', 'primary_worker', 'additional_workers',
          'category', 'subcategory', 'cost', 'purchased', 'photo_url']
 
-DBINFO = {'user': 'marquart', 'password': 'Hello*8there', 'database':
-          'charger_buildlog', 'host': 'mysql.marquartcharger.org'}
 DBINFO = {'user': 'reaper', 'password': 'hello*', 'database':
           'charger_buildlog', 'host': 'localhost'}
 
@@ -25,12 +23,13 @@ def main():
     db = setup_db()
     save_categories(db)
     data = get_data(db)
-    print_data(data)
+    save_data(data)
     cleanup_db(db)
 
 
-def print_data(data):
+def save_data(data):
     clean_data = []
+    stat_data = []
     for item in data:
         clean_item = []
         for value in item:
@@ -39,7 +38,13 @@ def print_data(data):
                 newvalue = str(value)
             clean_item.append(newvalue)
         clean_data.append(clean_item)
-    print(json.dumps(clean_data))
+        stat_item = clean_item[:]
+        stat_item[1] = ''
+        stat_data.append(stat_item)
+    with open('data.json', 'w') as fstream:
+        json.dump(clean_data, fstream)
+    with open('stats.json', 'w') as fstream:
+        json.dump(stat_data, fstream)
 
 
 def setup_db():

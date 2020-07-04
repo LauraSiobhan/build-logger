@@ -6,6 +6,7 @@
 
 import mysql.connector as dbcon
 import datetime
+import click
 
 ORDER = ['date', 'activity', 'hours', 'primary_worker', 'additional_workers',
          'category', 'subcategory', 'cost', 'purchased', 'photo_url']
@@ -13,27 +14,41 @@ ORDER = ['date', 'activity', 'hours', 'primary_worker', 'additional_workers',
 DBINFO = {'user': 'reaper', 'password': 'hello*', 'database': 'charger_buildlog'}
 
 
-def main():
+@click.command()
+@click.option('--cost', '-c', 
+              default = False,
+              is_flag = True,
+              help = 'Show only entries with a cost associated')
+def main(cost):
     """
     """
     db = setup_db()
     data = get_data(db)
-    print_data(data)
+    print_data(data, cost)
     cleanup_db(db)
 
 
-def print_data(data):
+def print_data(data, cost_flag):
     total_hours = 0
     cat_hours = {}
     for item in data:
         hours = item[2]
         cat = item[5]
+        cost = item[7]
+        if cost_flag and cost == 0:
+                continue
         total_hours += hours
         if cat in cat_hours:
             cat_hours[cat] += hours
         else:
             cat_hours[cat] = hours
-        print('{} [{} hrs]: {}'.format(item[0].date(), hours, item[1]))
+        if cost_flag:
+            print('{} [{} hrs]: ${} {}'.format(item[0].date(), 
+                                               hours, 
+                                               cost, 
+                                               item[1]))
+        else:
+            print('{} [{} hrs]: {}'.format(item[0].date(), hours, item[1]))
         print()
     for cat in cat_hours:
         print('{} hours: {}'.format(cat, cat_hours[cat]))
