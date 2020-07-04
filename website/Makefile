@@ -1,5 +1,5 @@
 REMOTE_HOST = obairlann.net
-REMOTE_DIR = .html/aviation/biplane/testlog
+REMOTE_DIR = .html/aviation/biplane/buildlog
 
 all: deploy
 
