@@ -1,7 +1,7 @@
 $(document).ready(function()
 {
     var rand = Math.random()
-    var url = "/reaper/aviation/biplane/buildlog/statdata.py?r=" +rand.toString();
+    var url = "statdata.py?r=" +rand.toString();
     var base_layout = 
     {
         paper_bgcolor: "#000",

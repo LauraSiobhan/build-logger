@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="/reaper/css/w3.css">
 <link rel="stylesheet" href="/reaper/css/local.css">
 
-<script src="/reaper/aviation/biplane/buildlog/jquery-3.3.1.js"></script>
+<script src="jquery-3.3.1.js"></script>
 <script src="/reaper/js/plotly-latest.min.js"></script>
-<script src="/reaper/aviation/biplane/buildlog/table.js"></script>
-<script src="/reaper/aviation/biplane/buildlog/dashboard-total.js"></script>
+<script src="table.js"></script>
+<script src="dashboard-total.js"></script>
 
 <style>
 .w3-striped tbody tr:nth-child(2n) {
@@ -18,6 +18,9 @@
 </style>
 
 <body>
+
+<input type="hidden" id="pagenum" value="1">
+<input type="hidden" id="pagesize" value="30">
 
 <div class="w3-row">
   <div class="w3-container w3-quarter"></div>
