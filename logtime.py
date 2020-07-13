@@ -159,7 +159,7 @@ def save_answers(dbs, answers):
         for label in ORDER:
             answer = answers[label]
             try:
-                answer = answer.replace('"', '\\"')
+                answer = answer.replace('"', '""')
                 arglist.append('"{}"'.format(answer))
             except TypeError as err:
                 print('got error {} trying to operate on {}'.format(err, answer))

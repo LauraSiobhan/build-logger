@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from collections import defaultdict
-from datetime import datetime
+import datetime
 import sqlite3 as sql
 import json
 
@@ -28,9 +28,9 @@ def get_hours_by_month(db):
 def get_last_x_days(db, limit):
     """ retrieve hour data for the last limit days """
     fmt = "%Y-%m-%d %H:%M:%S"
-    now = datetime.now().timestamp()
+    now = datetime.datetime.now().timestamp()
     seconds = limit * 24 * 60 * 60
-    x_days_ago = datetime.fromtimestamp(now - seconds).strftime(fmt)
+    x_days_ago = datetime.datetime.fromtimestamp(now - seconds).strftime(fmt)
     cursor = db.cursor()
     query = f'select date, hours from events where date > "{x_days_ago}"'
     cursor.execute(query)
@@ -45,6 +45,12 @@ def get_hours_by_day(db, limit):
         date = item[0].split(' ')[0]
         hours = item[1]
         daydata[date] += hours
+    today = datetime.datetime.today()
+    all_days = [(today - datetime.timedelta(days=x)).strftime("%Y-%m-%d")
+                for x in range(limit)]
+    for day in all_days:
+        if not daydata[day]:
+            daydata[day] = 0.0
     return daydata
 
 def get_avg_daily(db, limit):
@@ -64,8 +70,8 @@ def get_avg_overall(db):
     date, time = first_date_str.split(' ')
     datelist = [int(item) for item in date.split('-')]
     timelist = [int(item) for item in time.split(':')]
-    first_date = datetime(*datelist, *timelist)
-    days = (datetime.now() - first_date).days
+    first_date = datetime.datetime(*datelist, *timelist)
+    days = (datetime.datetime.now() - first_date).days
     total_hours = get_total_hours(db)
     return total_hours / days
 
