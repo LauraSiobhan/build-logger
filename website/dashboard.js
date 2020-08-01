@@ -101,10 +101,13 @@ function calc_monthly_rate(raw_data, plot_data)
 function calc_thirty_day(raw_data, plot_data)
 {
     var thirty_day = raw_data.hours_last_30;
+    plot_data[0].total_hours = 0;
     for (date in thirty_day)
     {
+        var hours = thirty_day[date];
         plot_data[0].x.push(date);
-        plot_data[0].y.push(thirty_day[date]);
+        plot_data[0].y.push(hours);
+        plot_data[0].total_hours += hours;
     }
 }
 

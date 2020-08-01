@@ -41,8 +41,8 @@ function add_rows(data)
     {
         var hour_word = "hours";
         if (data[i][2] == 1) { hour_word = "hour"; }
-        var act = "<td><p> " + data[i][0] + " :: " + data[i][2] + " " +
-                  hour_word + " </p><p> " + niceify(data[i][1]) + " </td>";
+        var act = "<td><p><b> " + data[i][0] + " :: " + data[i][2] + " " +
+                  hour_word + " </b></p><p> " + niceify(data[i][1]) + " </td>";
         tr = $('<tr/>');
         tr.append(act);
         if (data[i][9] == "")
@@ -63,7 +63,7 @@ function add_rows(data)
 function niceify(text)
 {
     // make the text more nicer: honor \n chars, etc.
-    return text.replace(/\\\n/g, "<br>");
+    return text.replace(/\n/g, "<br>");
 }
 
 function get_smallname(url)
