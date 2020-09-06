@@ -1,5 +1,6 @@
 $(document).ready(function()
 {
+    $('#pagenum').val("1");
     var pagesize = Number($('#pagesize').val());
     $.ajax(
     {
@@ -16,7 +17,7 @@ $(document).ready(function()
         var position = $(window).scrollTop();
         var bottom = $(document).height() - $(window).height();
 
-        if (position >= (bottom - 2))
+        if (position >= (bottom - 200))
         {
             var pagenum = Number($('#pagenum').val());
             var pagesize = Number($('#pagesize').val());
@@ -34,26 +35,33 @@ $(document).ready(function()
     });
 });
 
+var total_hours;
+
 function add_rows(data)
 {
     var tr;
-    for (var i=0; i<data.length; i++)
+    var events = data.events;
+    if (!total_hours) { total_hours = data.total_hours; }
+    for (var i=0; i<events.length; i++)
     {
+        var hours = events[i][2];
         var hour_word = "hours";
-        if (data[i][2] == 1) { hour_word = "hour"; }
-        var act = "<td><p><b> " + data[i][0] + " :: " + data[i][2] + " " +
-                  hour_word + " </b></p><p> " + niceify(data[i][1]) + " </td>";
+        if (events[i][2] == 1) { hour_word = "hour"; }
+        var act = "<td><p><b> " + events[i][0] + " :: " + hours + " " +
+                  hour_word + " :: " + Number.parseFloat(total_hours).toFixed(1)
+                  + " total </b></p><p> " + niceify(events[i][1]) + " </td>";
+        total_hours -= hours;
         tr = $('<tr/>');
         tr.append(act);
-        if (data[i][9] == "")
+        if (events[i][9] == "")
         {
             tr.append("<td> No picture </td>");
         }
         else
         {
-            var smallname = get_smallname(data[i][9]);
+            var smallname = get_smallname(events[i][9]);
             var img = "<img src=\"" + smallname + "\">";
-            tr.append("<td><a href=\"" + data[i][9] + "\">" + img +
+            tr.append("<td><a href=\"" + events[i][9] + "\">" + img +
                 "</a></td>");
         }
         $('.logtable').append(tr);
