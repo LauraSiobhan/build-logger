@@ -86,6 +86,18 @@ def get_hours_by_category(db):
         categories[cat] += hours
     return categories
 
+def get_hours_by_subcategory(db):
+    cursor = db.cursor()
+    cursor.execute('select category, subcategory, hours from events')
+    rawdata = cursor.fetchall()
+    subcats = defaultdict(lambda: defaultdict(float))
+    for item in rawdata:
+        cat = item[0]
+        subcat = item[1]
+        hours = item[2]
+        subcats[cat][subcat] += hours
+    return subcats
+        
 def main():
     filename = "charger-buildlog.sqlite"
     db = connect_db(filename)
@@ -96,6 +108,7 @@ def main():
     data['avg_last_month'] = get_avg_daily(db, 30)
     data['avg_overall'] = get_avg_overall(db)
     data['hours_by_category'] = get_hours_by_category(db)
+    data['hours_by_subcategory'] = get_hours_by_subcategory(db)
 
     print('Content-type: application/json\n\n')
     print(json.dumps(data))

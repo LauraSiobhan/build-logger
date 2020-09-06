@@ -65,6 +65,10 @@ $(document).ready(function()
     });
 });
 
+var subcat_hours = {};
+var subcat_mode = 'category';
+var cat_data = { x: [], y: [] };
+var cat_title = "Hours Spent by Category (click to drill down)";
 
 /* ----------------------------------------------------------------------
  * calc functions
@@ -88,6 +92,22 @@ function calc_category_hours(raw_data, plot_data)
     {
         plot_data[0].y.push(cat);
         plot_data[0].x.push(cat_hours[cat]);
+    }
+
+    var subcat_raw = raw_data.hours_by_subcategory;
+    for (cat in subcat_raw)
+    {
+        subcat_hours[cat] = { 
+            x: [], 
+            y: [], 
+            type: 'bar', 
+            orientation: 'horizontal'
+        };
+        for (subcat in subcat_raw[cat])
+        {
+            subcat_hours[cat].y.push(subcat);
+            subcat_hours[cat].x.push(subcat_raw[cat][subcat]);
+        }
     }
 }
 
@@ -117,15 +137,17 @@ function calc_thirty_day(raw_data, plot_data)
 
 function plot_monthly_progress(layout, plot_data)
 {
-    layout.title = "Hours Spent by Month";
-    layout.yaxis.title = "Hours";
-    Plotly.newPlot("monthly_progress", plot_data, layout);
+    var local_layout = JSON.parse(JSON.stringify(layout));
+    local_layout.title = "Hours Spent by Month";
+    local_layout.yaxis.title = "Hours";
+    Plotly.newPlot("monthly_progress", plot_data, local_layout);
 }
 
 
 function plot_overall_progress(layout, total_hours)
 {
-    layout.title = "Overall progress";
+    var local_layout = JSON.parse(JSON.stringify(layout));
+    local_layout.title = "Overall progress";
     var total_progress = [
           {
             domain: { x: [0, 1], y: [0, 1] },
@@ -137,29 +159,48 @@ function plot_overall_progress(layout, total_hours)
             gauge: { axis: { range: [null, 4000] } } 
           }
     ];
-    Plotly.newPlot("total_progress", total_progress, layout);
+    Plotly.newPlot("total_progress", total_progress, local_layout);
 }
 
 
-function plot_category_hours(herplayout, plot_data)
+function plot_category_hours(layout, plot_data, subcat_data)
 {
-    var layout = 
+    var local_layout = JSON.parse(JSON.stringify(layout));
+    local_layout.title = cat_title;
+    Plotly.newPlot("category_hours", plot_data, local_layout);
+    var myplot = document.getElementById('category_hours');
+    myplot.on('plotly_click', expand_cat);
+}
+
+
+function expand_cat(data)
+{
+    var cat = data.points[0].y;
+    var myplot = document.getElementById('category_hours');
+    if (subcat_mode == 'category')
     {
-        title: "Hours Spent by Category",
-        paper_bgcolor: "#000",
-        plot_bgcolor: "#000",
-        font: { color: "#fff" },
-        xaxis: {
-            title: "Hours",
-            gridcolor: "#444",
-            tickcolor: "#555"
-        },
-        yaxis: {
-            gridcolor: "#444",
-            tickcolor: "#555"
+        for (item in data.points[0].data.x)
+        {
+            cat_data.x.push(data.points[0].data.x[item]);
         }
-    };
-    Plotly.newPlot("category_hours", plot_data, layout);
+        for (item in data.points[0].data.y)
+        {
+            cat_data.y.push(data.points[0].data.y[item]);
+        }
+        subcat_mode = 'subcategory';
+        data.points[0].data.x = subcat_hours[cat].x;
+        data.points[0].data.y = subcat_hours[cat].y;
+        myplot.layout.title.text = "Hours Spent on " + cat +
+            " (click to return)";
+    }
+    else
+    {
+        data.points[0].data.x = cat_data.x;
+        data.points[0].data.y = cat_data.y;
+        myplot.layout.title.text = cat_title;
+        subcat_mode = 'category';
+    }
+    Plotly.redraw("category_hours");
 }
 
 
@@ -168,7 +209,8 @@ function plot_monthly_rate(layout, plot_data)
     var overall_avg = plot_data.overall_avg;
     var rate = plot_data.month_avg;
     var upper_limit = 4;
-    layout.title = "Avg hours per day, last 30 days";
+    var local_layout = JSON.parse(JSON.stringify(layout));
+    local_layout.title = "Avg hours per day, last 30 days";
     var monthly_rate = [
           {
             domain: { x: [0, 1], y: [0, 1] },
@@ -186,7 +228,7 @@ function plot_monthly_rate(layout, plot_data)
             }
           }
     ];
-    Plotly.newPlot("monthly_rate", monthly_rate, layout);
+    Plotly.newPlot("monthly_rate", monthly_rate, local_layout);
 }
 
 function plot_thirty_day(layout, plot_data)
@@ -198,9 +240,10 @@ function plot_thirty_day(layout, plot_data)
         plot_data[0].y.push(plot_data[0].dates[date]);
     }
 
-    layout.title = "Daily hours, last 30 days";
-    layout.yaxis.title = "Hours";
-    layout.shapes = [{
+    var local_layout = JSON.parse(JSON.stringify(layout));
+    local_layout.title = "Daily hours, last 30 days";
+    local_layout.yaxis.title = "Hours";
+    local_layout.shapes = [{
         type: 'line',
         xref: 'paper',
         x0: 0,
@@ -213,5 +256,5 @@ function plot_thirty_day(layout, plot_data)
             dash: 'dot'
         }
     }];
-    Plotly.newPlot("30_day_chart", plot_data, layout);
+    Plotly.newPlot("30_day_chart", plot_data, local_layout);
 }
