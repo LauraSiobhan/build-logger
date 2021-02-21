@@ -2,7 +2,11 @@
 # vi: set wm=0 ai sw=4 ts=4 et:
 
 """
-a simple script to input build log information from the command line
+this script will prompt you for information related to a time-based activity;
+in this case, building an airplane.  run the program without command line
+options.
+
+data is stored in a local sqlite3 database.
 """
 
 import sqlite3 as sql
@@ -10,10 +14,14 @@ import os, subprocess
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 
-# TODO: add readline support
-
+# information on the databases to use.  for local sqlite3, this is just a
+# filename, but this variable can contain info for multiple databases.  the
+# database functions below will need to be updated to work with database types
+# other than sqlite3.
 DBINFO = [{'filename': 'charger-buildlog.sqlite'}]
 
+# questions to ask the user.  the key is the db column name, and the value is
+# the text to show the user.
 QUESTIONS = {'category': 'Select or Enter Category',
              'subcategory': 'Select or Enter Subcategory',
              'activity': 'What activity',
@@ -24,24 +32,33 @@ QUESTIONS = {'category': 'Select or Enter Category',
              'cost': 'Any cost associated (dollars)',
              'purchased': 'What was purchased'}
 
-# used to insert data into the DB in the correct order
+# system defaults
+DEFAULT_COST = 0
+DEFAULT_WORKER = 'Ian'
+
+# used to insert data into the DB in the correct order.  this should be
+# updated to match your DB schema.
 ORDER = ['activity', 'hours', 'primary_worker', 'additional_workers',
          'category', 'subcategory', 'cost', 'purchased', 'photo_url']
 
 def main():
     """
-    run through the questions
+    ask the user a series of questions, saving the answers in the database
     """
     dbs = setup_dbs()
     answers = get_answers(dbs)
     save_answers(dbs, answers)
     cleanup_dbs(dbs)
+    # run a script to push the data out to a server; not required for local
+    # use, but handy for the build log website i'm running.
     subprocess.run(['./push.sh'])
 
 
 def setup_dbs():
     """
-    set up and return a link to the db
+    set up and return a link to the db.  this system is capable of writing the
+    same data to multiple databases, which is handy when using eg MySQL with a
+    local and a remote database.
     """
     dbs = []
     for db_info in DBINFO:
@@ -51,7 +68,7 @@ def setup_dbs():
 
 def cleanup_dbs(dbs):
     """
-    clean up the DB connection
+    clean up the DB connection, once we're done with them
     """
     for db in dbs:
         db.close()
@@ -59,29 +76,42 @@ def cleanup_dbs(dbs):
 
 def get_answers(dbs):
     """
-    ask the various questions
+    print questions for the user, and record answers
     """
+    answers = {}
     local_order = ORDER[:]
+
+    # category and subcategory are handled by the get_category() function,
+    # since they are built to automatically add new categories if the user
+    # doesn't pick one of the existing choices.
     local_order.remove('category')
     local_order.remove('subcategory')
-    answers = {}
+
     print(QUESTIONS['category'])
     answers['category'] = get_category(dbs)
     print(QUESTIONS['subcategory'])
     answers['subcategory'] = get_category(dbs, answers['category'])
+
+    # now ask the simpler questions
     for label in local_order:
         question = QUESTIONS[label]
         answers[label] = ask_question(question)
-        if label == 'cost' and answers[label] == '':
-            answers[label] = '0'
-        elif label == 'primary_worker' and answers[label] == '':
-            answers[label] = 'Ian'
+
+        # this section adds default answers, if the user enters no data, but a
+        # value needs to be present
+        if answers[label] == '':
+            if label == 'cost':
+                answers[label] = DEFAULT_COST
+            elif label == 'primary_worker':
+                answers[label] = DEFAULT_WORKER
     return answers
 
 
 def get_category(dbs, category=None):
     """
-    display a list of categories to choose from, and return the answer
+    display a list of categories to choose from, and return the answer.  if
+    the user enters anything that's not a matching value from the list, it
+    will be added as a new category.
     """
     categories = find_categories(dbs[0], category)
     i = 1
@@ -100,9 +130,9 @@ def get_category(dbs, category=None):
 
 def find_categories(db, category=None):
     """
-    will pick a category when given no arg, but will pick a subcat
-    if given an arg of category name
-    returns a list of names
+    return a list of category names.  if the category variable is set, this
+    function will retrieve a list of subcategory names under the matching
+    category name from the database.
     """
     cursor = db.cursor()
     categories = []
@@ -135,9 +165,11 @@ def save_new_category(dbs, cat, subcat):
 
 def ask_question(question):
     """
-    ask a generic question
+    ask a generic question, and return the answer
     """
     answer = input(question + ' (:e for editor): ')
+    # if the user specifies :e as their answer, attempt to start an editor
+    # such as vi or emacs, to allow for more complex entries
     if answer == ':e':
         myeditor = os.environ.get('EDITOR') or os.environ.get('VISUAL')
         with NamedTemporaryFile(mode='w+') as fp:
@@ -159,7 +191,7 @@ def save_answers(dbs, answers):
         for label in ORDER:
             answer = answers[label]
             try:
-                answer = answer.replace('"', '""')
+                answer = answer.replace('"', '""') # escape quotes for sqlite
                 arglist.append('"{}"'.format(answer))
             except TypeError as err:
                 print('got error {} trying to operate on {}'.format(err, answer))

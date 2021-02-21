@@ -1,6 +1,17 @@
+""" this script builds up an empty database.  this is very specific to the
+charger buildlog, but shows how to create a new database quickly and easily.
+
+DO NOT run this around an existing database, it may be DESTROYED.  you've
+been warned. """
+
 import sqlite3 as sql
+import os
 
 filename = 'charger-buildlog.sqlite'
+files = os.listdir('.')
+if filename in files:
+    input(f'{filename} already exists! ^C to cancel, or press enter to '
+    'continue')
 db = sql.connect(filename)
 cursor = db.cursor()
 
