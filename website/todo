@@ -1,7 +1,0 @@
-remaining to do:
-
-* figure out auto-loading with down-scroll, and load pages of log data
-  on scroll
-* update push.sh to copy the sqlite database instead of the json files
-* remove json generation from the push process
-
