@@ -1,0 +1,17 @@
+This project is a logging program, for keeping track of an hourly
+activity.  I first built it to track building my biplane project.
+
+It is console-mode, with no graphics or fancy point-and-click anything.
+
+It uses the sqlite3 database engine.  The resulting file is copied up
+to my website server, where it powers the build log, and dashboard,
+which can be seen here:
+
+http://obairlann.net/reaper/aviation/biplane/buildlog/index.html
+
+http://obairlann.net/reaper/aviation/biplane/buildlog/dashboard.html
+
+I'm afraid this has a lot of assumptions built in, but I post it in the
+hopes that others find it useful.
+
+- Ian
