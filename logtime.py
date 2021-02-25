@@ -33,7 +33,7 @@ QUESTIONS = {'category': 'Select or Enter Category',
              'purchased': 'What was purchased'}
 
 # system defaults
-DEFAULT_COST = 0
+DEFAULT_COST = '0'
 DEFAULT_WORKER = 'Ian'
 
 # used to insert data into the DB in the correct order.  this should be
