@@ -156,7 +156,7 @@ function plot_overall_progress(layout, total_hours)
             title: { text: "Hours", font: { size: 12 } },
             type: "indicator",
             mode: "number+gauge",
-            gauge: { axis: { range: [null, 4000] } } 
+            gauge: { axis: { range: [null, 6000] } } 
           }
     ];
     Plotly.newPlot("total_progress", total_progress, local_layout);
