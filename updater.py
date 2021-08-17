@@ -58,7 +58,7 @@ def cleanup_dbs(dbs):
 def find_entry(dbs):
     """ show the user a list of entries to choose from, and return the date of
     the chosen entry """
-    num_entries = 10
+    num_entries = 20
     offset = 0
     db = dbs[0]
     cursor = db.cursor()
