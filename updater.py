@@ -109,7 +109,11 @@ def update_entry(dbs, date):
 
     updates = []
     for item in newdata:
-        name, info = item.split(': ')
+        try:
+            name, *info = item.split(': ')
+            info = ': '.join(info)
+        except ValueError:
+            import pdb; pdb.set_trace()
         updates.append(f'{name} = "{info}"')
     query = f'update events set {", ".join(updates)} where date = "{date}"'
     print(query)
