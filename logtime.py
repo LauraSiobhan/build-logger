@@ -26,7 +26,7 @@ QUESTIONS = {'category': 'Select or Enter Category',
              'subcategory': 'Select or Enter Subcategory',
              'activity': 'What activity',
              'hours': 'How many hours (decimal)',
-             'primary_worker': 'Who was the primary worker [<CR> for Ian]',
+             'primary_worker': 'Who was the primary worker [<CR> for Laura]',
              'additional_workers': 'Any additional workers',
              'photo_url': 'What photo URL',
              'cost': 'Any cost associated (dollars)',
@@ -34,7 +34,7 @@ QUESTIONS = {'category': 'Select or Enter Category',
 
 # system defaults
 DEFAULT_COST = '0'
-DEFAULT_WORKER = 'Ian'
+DEFAULT_WORKER = 'Laura'
 
 # used to insert data into the DB in the correct order.  this should be
 # updated to match your DB schema.
